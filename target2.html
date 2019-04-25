@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+  <!-- 
+    来自博文 https://www.cnblogs.com/dtdxrk/archive/2013/05/25/3098772.html
+
+    1. 使用 HTML+CSS 实现九宫格布局，border-widht 5px，一个格子大小是 50*50，hover时候边框变为红色（兼容IE6+，考虑语义化的结构）
+    2. 使用一个标签和纯CSS <a href="#" title="订阅博客">订阅博客</a> 实现如图效果，文字始终保持左边距10px, 下边距5px，改变字体大小（12px-50px）时，边距保持不变，不使用 content:"订阅博客"，兼容现代浏览器     
+  -->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="referrer" content="no-referrer" />
+  <title>css淘宝测试练习题</title>
+  <style type="text/css">
+  *{margin: 0;padding: 0;font-size: 12px;line-height: 1;font-family:  'Microsoft Yahei',Arial;}
+  h1{background-color: green;color: #fff;padding: 10px;font-size: 16px;font-weight: normal;}
+  a{text-decoration: none;}
+
+  #box1{width:180px;height:180px;overflow: hidden;}
+  #box1 a{display: block;float:left;z-index:1;border: 5px solid blue;margin-right: -5px; margin-bottom:-5px;width: 50px;height: 50px;line-height: 50px;text-align: center;}
+  #box1 a:hover{border-color: red;position: relative;z-index: 2;}
+
+  #box2{ text-align: left;width: 500px;height:100px;padding-left: 10px;padding-bottom: 5px; display:table-cell; vertical-align:bottom;border-bottom: 3px solid red;background-color: #a0d0e0;color: #000;transition: font-size 4s;}
+  #box2:hover{background-color: #a0d0e0;-webkit-animation-name:'wobble';-webkit-animation-duration:0.3s;font-size: 50px;}
+  @-webkit-keyframes 'wobble' {
+     50% {
+        background: green;
+     }
+     100% {
+        background: #a0d0e0;
+     }
+  }
+  </style>
+</head>
+<body>
+<h1>一.使用 HTML+CSS 实现如图布局，border-widht 5px，一个格子大小是 50*50，hover时候边框变为红色（兼容IE6+，考虑语义化的结构）</h1>
+<img src="https://images0.cnblogs.com/blog/294743/201305/18155307-5204bc8ef6164feb87953dd7f264158b.gif">
+<div id="box1">
+  <a href="#">1</a>
+  <a href="#">2</a>
+  <a href="#">3</a>
+  <a href="#">4</a>
+  <a href="#">5</a>
+  <a href="#">6</a>
+  <a href="#">7</a>
+  <a href="#">8</a>
+  <a href="#">9</a>
+</div>
+
+
+<h1>二.使用一个标签和纯CSS a href="#" title="订阅博客" 订阅博客 a 实现如图效果，文字始终保持左边距10px, 下边距5px，改变字体大小（12px-50px）时，边距保持不变，不使用 content:"订阅博客"，兼容现代浏览器</h1>
+<img src="https://images0.cnblogs.com/blog/294743/201305/18155433-83a8a694edc3490d81efde98cc3b09b2.gif">
+
+  <a href="#" id="box2" title="订阅博客">订阅博客</a>
+
+</body>
+</html>

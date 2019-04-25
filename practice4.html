@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>E奇门(QMEN)</title>
+    <style>
+      * {padding: 0; margin: 0; box-sizing: border-box;}
+      html {height: 100%;}
+      body {height: 100%;}
+
+      header {background: yellow; width: 100%; height: 80px; position: fixed; top: 0;}
+      .container {width: 1100px; margin: 0 auto; padding-top: 15px;}
+      .container .line > * {height: 50px; line-height: 50px;}
+
+      .main {display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;}
+      .content-body {width: 800px; height: 495px; display: flex; box-shadow: 0 0 50px #EFEFEF;}
+      .content-body > .left {background: yellow; flex: 1 1; display: flex; flex-direction: column; justify-content: center; align-items: center;}
+      .content-body > .right {flex: 1 1;}
+      .content-body > .left > p {margin-top: 1.5em; font-size: 20px; font-weight: bold;}
+
+      #main-logo {background: white; width: 180px; height: 110px; padding: 20px 40px;}
+      .logo-body:before {display: block; content: ""; width: 0; height: 0; border-bottom: 40px solid white; border-left: 90px solid transparent; border-right: 90px solid transparent;}
+      .logo-body:after {display: block; content: ""; width: 0; height: 0; border-top: 40px solid white; border-left: 90px solid transparent; border-right: 90px solid transparent;}
+
+      .content-body > .right {display: flex; justify-content: center; align-items: center;}
+      .input-body {width: 300px; height: 350px; font-size: 20px;}
+      .input-body > .title {font-weight: bold;}
+      .input-box {border: 1px solid #EEE; padding: 1em 20px;}
+      .input-box > label {font-size: 14px; color: #888; height: 24px; line-height: 24px;}
+      .input-box > input {font-size: 22px; font-weight: bold; color: black; width: 100%; border: none;}
+      .input-box > input[type="password"] {letter-spacing: 0.2em;}
+      .input-box > input:focus {outline: none;}
+      .input-box:focus-within {border-left: 6px solid yellow; padding-left: 15px;}
+      .input-box ~ .input-box {margin-top: -1px;}
+      .input-box:first-of-type {margin-top: 1.5em;}
+      .input-box > * {display: block;}
+
+      .input-body > .link {margin-top: 0.5em; overflow: hidden;}
+      .input-body > .link > a {float: right; font-size: 12px; color: #888; text-decoration: none;}
+      .input-body > .link > a:hover {color: #CCC;}
+      .input-body > .actions {margin-top: 1.5em;}
+      .actions > button {width: 145px; height: 40px; line-height: 40px; color: black; font-size: 16px; border: none; font-weight: bold;}
+      .actions > button:focus {outline: none;}
+      #login {background: yellow;}
+      #register {background: white; border: 1px solid #EEE;}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="line">
+          <img src="./target4/logo.png">
+        </div>
+      </div>
+    </header>
+    <div class="main">
+      <div class="content-body">
+        <div class="left">
+          <div class="logo-body">
+            <div id="main-logo">
+              <img src="./target4/logo.png" />
+            </div>
+          </div>
+          <p>中国版权中心超市</p>
+        </div>
+        <div class="right">
+          <div class="input-body">
+            <p class="title">用户登录</p>
+            <div class="input-box">
+              <label>手机号码</label>
+              <input type="text" autofocus="autofocus"/>
+            </div>
+            <div class="input-box">
+              <label>密码</label>
+              <input type="password"/>
+            </div>
+            <div class="link">
+              <a href="#">忘记密码</a>
+            </div>
+            <div class="actions">
+              <button id="login">登录</button>
+              <button id="register">注册</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

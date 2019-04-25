@@ -1,0 +1,438 @@
+<!doctype html>
+<html>
+  <head>
+    <meta chraset="utf-8">
+    <title>echarts</title>
+    <style lang="postcss">
+      * {padding: 0; margin: 0; box-sizing: border-box;}
+      html {width: 100%; height: 100%}
+      body {width: 100%; min-height: 100%; background: gray; padding-bottom: 50px}
+      /* #chart1 {width: 1600px; height: 480px; margin: 0 auto; background: white; margin-top: 50px; border-radius: 10px;} */
+      #chart1, #chart2 {width: 1000px; height: 400px; margin: 0 auto; background: white; margin-top: 50px; border-radius: 10px;}
+    </style>
+  </head>
+  <body>
+    <div id="chart1"></div>
+    <div id="chart2"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js"></script>
+    <script>
+      /*
+       * Date Format 1.2.3
+       * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
+       * MIT license
+       *
+       * Includes enhancements by Scott Trenda <scott.trenda.net>
+       * and Kris Kowal <cixar.com/~kris.kowal/>
+       *
+       * Accepts a date, a mask, or a date and a mask.
+       * Returns a formatted version of the given date.
+       * The date defaults to the current date/time.
+       * The mask defaults to dateFormat.masks.default.
+       */
+
+      var dateFormat = function () {
+        var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+          timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+          timezoneClip = /[^-+\dA-Z]/g,
+          pad = function (val, len) {
+            val = String(val);
+            len = len || 2;
+            while (val.length < len) val = "0" + val;
+            return val;
+          };
+
+        // Regexes and supporting functions are cached through closure
+        return function (date, mask, utc) {
+          var dF = dateFormat;
+
+          // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
+          if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
+            mask = date;
+            date = undefined;
+          }
+
+          // Passing date through Date applies Date.parse, if necessary
+          date = date ? new Date(date) : new Date;
+          if (isNaN(date)) throw SyntaxError("invalid date");
+
+          mask = String(dF.masks[mask] || mask || dF.masks["default"]);
+
+          // Allow setting the utc argument via the mask
+          if (mask.slice(0, 4) == "UTC:") {
+            mask = mask.slice(4);
+            utc = true;
+          }
+
+          var	_ = utc ? "getUTC" : "get",
+            d = date[_ + "Date"](),
+            D = date[_ + "Day"](),
+            m = date[_ + "Month"](),
+            y = date[_ + "FullYear"](),
+            H = date[_ + "Hours"](),
+            M = date[_ + "Minutes"](),
+            s = date[_ + "Seconds"](),
+            L = date[_ + "Milliseconds"](),
+            o = utc ? 0 : date.getTimezoneOffset(),
+            flags = {
+              d:    d,
+              dd:   pad(d),
+              ddd:  dF.i18n.dayNames[D],
+              dddd: dF.i18n.dayNames[D + 7],
+              m:    m + 1,
+              mm:   pad(m + 1),
+              mmm:  dF.i18n.monthNames[m],
+              mmmm: dF.i18n.monthNames[m + 12],
+              yy:   String(y).slice(2),
+              yyyy: y,
+              h:    H % 12 || 12,
+              hh:   pad(H % 12 || 12),
+              H:    H,
+              HH:   pad(H),
+              M:    M,
+              MM:   pad(M),
+              s:    s,
+              ss:   pad(s),
+              l:    pad(L, 3),
+              L:    pad(L > 99 ? Math.round(L / 10) : L),
+              t:    H < 12 ? "a"  : "p",
+              tt:   H < 12 ? "am" : "pm",
+              T:    H < 12 ? "A"  : "P",
+              TT:   H < 12 ? "AM" : "PM",
+              Z:    utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+              o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+              S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
+            };
+
+          return mask.replace(token, function ($0) {
+            return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+          });
+        };
+      }();
+
+      // Some common format strings
+      dateFormat.masks = {
+        "default":      "ddd mmm dd yyyy HH:MM:ss",
+        shortDate:      "m/d/yy",
+        mediumDate:     "mmm d, yyyy",
+        longDate:       "mmmm d, yyyy",
+        fullDate:       "dddd, mmmm d, yyyy",
+        shortTime:      "h:MM TT",
+        mediumTime:     "h:MM:ss TT",
+        longTime:       "h:MM:ss TT Z",
+        isoDate:        "yyyy-mm-dd",
+        isoTime:        "HH:MM:ss",
+        isoDateTime:    "yyyy-mm-dd'T'HH:MM:ss",
+        isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+      };
+
+      // Internationalization strings
+      dateFormat.i18n = {
+        dayNames: [
+          "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
+          "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+        ],
+        monthNames: [
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+          "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+        ]
+      };
+
+      // For convenience...
+      Date.prototype.format = function (mask, utc) {
+        return dateFormat(this, mask, utc);
+      };
+    </script>
+    <script>
+      var myChart1 = echarts.init(document.getElementById('chart1'));
+      var myChart2 = echarts.init(document.getElementById("chart2"));
+      var data1 = [
+        7, 4, 1, 6, 3, 5, 4, 7, 6, 5, 
+        4, 4, 3, 2, 2, 3, 4, 5, 6, 5,
+        4, 1, 3, 2, 5, 7, 1, 2, 3, 3, 4
+      ];
+      var data2 = [
+        659, 2190, 560, 2418, 2406, 2654, 2896, 1395, 2798, 1427, 
+        2382, 551, 1268, 1543, 2940, 2097, 783, 1410, 2043, 2648, 
+        573, 1732, 2428, 2686, 2502, 2957, 1011, 870, 1354, 777, 1344
+      ];
+      var data3 = [
+        2485, 2967, 2671, 1412, 959, 1075, 2096, 2702, 2786, 2158, 
+        1286, 2213, 744, 1325, 2358, 2302, 867, 1156, 2336, 2619, 
+        1198, 2038, 991, 1397, 2375, 2280, 1514, 770, 2963, 2483, 1076
+      ];
+      var data4 = [
+        812, 2257, 1071, 2886, 676, 1774, 958, 983, 1723, 2168, 
+        1273, 1922, 2279, 546, 1130, 991, 2580, 1879, 2720, 2911, 
+        514, 1288, 1608, 659, 666, 1052, 868, 2137, 797, 2899, 500
+      ]; 
+      myChart1.setOption({
+        title: {
+            text: "发视频走势",
+            top: 20,
+            left: 25,
+        },
+        legend: {
+          /* html css -> image 
+           * https://htmlcsstoimage.com/
+           * html: <div>  css: div {width: 50px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #316be1 0%, #1cbcee 100%);}
+           * image -> data uri
+           * https://dataurl.sveinbjorn.org/#dataurlmaker
+           */
+          data: [{
+              icon: "image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAMCAYAAACURRhjAAAAAXNSR0IArs4c6QAAAklJREFUWIXtmL+KFEEQxn/Ve66rq4KegrgXuIIPoKGJkeaCgrEIioEP4DuYiaFooKnBRQamBgo+gnCHd8q5oncu/mH3tgy6urtm5s5MJpmFpenq+qq/7yuK3RlRVcU+z17vsPp2ytpkl9lCERFUAAEF2yuIRECIcSR9BUWRIDmugOQ8AcNX46Bi9VEIVt/wcW84MV7u/iqvlGecDK/oP/gbzniL8Sn8jZdI1pruh310N/RUeS0JnBv2uD7qc3d8KLUAUVVd35px7/EXNr7NG2QLuealXuz+Zvt4U5QXWzfbi600SYxXw2zPyzVrT7N9E/bg5ZrX0C11XsXszKvmR9HTbNbKQHh+8Qjj4VJsyJUHH5lMFw2S3YT8vwnJONNzsg/vLx8nPHm1zdcfC4QCiouRy9giKpmV8nxARFCnOZ1LEk3aY3m2x9V3F0tJdHnee8MVgF8yvuhxeep4OZzPi3qcbnzdQiTXz/aUuD/wfnrcZAaPPvwivHwzBYidJIknkjALIe0jOQPkPB+I5GOZhCtrqZg8zue4+u5iLYkuz7bieBWAXzK+6HF54ng5nM9LzXA/ta5uIZLrZ3tK3B94P6s45cWnP4TP33crHe0mpJ0JERE2fyuBWke7CWlvQhAIp0/0Kh3tJqS9CTnTF8Ktq8cqHe0mpL0JuT8eEK5dOspouddNSMsTcn7Y4+ZoEP9JP7x9qpuQlifk6YVhbFT11ck2q+9+srY1Z54sFron9bpuqfNK/B2vmh/1J/UDQRgfFm6sHOTO2fLq5C+d12M6j7OddgAAAABJRU5ErkJggg==",
+              name: "当日发现视频",
+          }],
+          top: 20,
+          right: 40,
+          itemWidth: 50,
+          itemHeight: 6,
+        },
+        grid: {
+          top: 100,
+          left: 70,
+          right: 50,
+          borderColor: "#D8D8D8",
+        },
+        xAxis: {
+          type: "category",  // time 类型需要 data 使用时间戳
+          data: [
+            "2019-03-01", "2019-03-02", "2019-03-03", "2019-03-04", "2019-03-05", "2019-03-06", "2019-03-07", "2019-03-08", "2019-03-09", "2019-03-10",
+            "2019-03-11", "2019-03-12", "2019-03-13", "2019-03-14", "2019-03-15", "2019-03-16", "2019-03-17", "2019-03-18", "2019-03-19", "2019-03-20",
+            "2019-03-21", "2019-03-22", "2019-03-23", "2019-03-24", "2019-03-25", "2019-03-26", "2019-03-27", "2019-03-28", "2019-03-29", "2019-03-30", "2019-03-31"
+          ],
+          axisLine: {
+            onZero: false,
+            lineStyle: {
+              color: "#D8D8D8",
+              width: 2,
+            }
+          },
+          axisTick: {
+            show: false,
+          },
+          axisLabel: {
+            color: "#878787",
+            fontSize: 14,
+            margin: 10,
+            interval: 1,
+            formatter: function(v, i) {
+              var date = new Date(v);
+              return date.format("m.d");
+            }
+          }
+        },
+        yAxis: [{
+          id: 0,
+          min: -0.5,
+          max: Math.max(...data1),
+          splitNumber: 10,
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            lineStyle: {
+              color: "#D8D8D8",
+              width: 2,
+            }
+          },
+          axisLabel: {
+            color: "#878787",
+            fontSize: 14,
+            margin: 10,
+            showMinLabel: false,
+            showMaxLabel: false,
+          },
+          splitLine: {
+            lineStyle: {
+              color: "#F7F7F7",
+              width: 2,
+            }
+          }
+        }, {
+          id: 1,
+          min: -0.5,
+          max: Math.max(...data1),
+          splitNumber: 10,
+          show: false,
+        }],
+        series: [{
+          name: '当日发现视频',
+          type: 'bar',
+          data: data1,
+          barWidth: 20,
+          itemStyle: {
+            barBorderRadius: 10,  // 也可以 [top-left, top-right, bottom-right, bottom-left]
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: '#316be1'}, {offset: 1, color: '#1cbcee'}]),
+          },
+        }, {
+          name: "当日发现视频折线图",
+          type: "line",
+          data: data1.map(function(x){return x * 4 / 5}),
+          smooth: true,
+          yAxisIndex: 1,
+          showSymbol: false,
+          symbolSize: 10,
+          symbol: "circle",
+          markLine: {
+            symbol: "none",
+          },
+          itemStyle: {
+            color: "transparent",
+            borderColor: "#316be1",
+            borderWidth: 5,
+            shadowColor: "white",
+            shadowBlur: 3,
+          },
+          lineStyle: {
+            color: "#1cbcee",
+            width: 5,
+            shadowColor: "rgba(40, 145, 231, 0.5)",  //  "#D8F3FB",
+            shadowBlur: 3,
+            shadowOffsetY: 15,
+          }
+        }],
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "none",
+          },
+          backgroundColor: "#FFF",
+          formatter: '{b}<br/><div style="width: 10px; height: 10px; border-radius: 5px; display: inline-block; background: #316be1;"></div> {a}: {c}',
+          textStyle: {
+            color: "#000",
+          },
+          extraCssText: "box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)",
+          position(point, params, dom, rect, size) {
+            return {left: point[0] - 60, top: "10%"};
+          }
+        }
+      });
+      myChart2.setOption({
+        legend: {
+          data: [{
+            name: "分享数",
+            icon: "image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAMCAYAAACURRhjAAAAAXNSR0IArs4c6QAAAOVJREFUWIXt2DFqAkEUgOF/noPp1Bj0HEHEwmYbT5EUAYWcyEqSIieRIGizhedQsqhsimh2Xwon6UIqM4LvK2cY+GGKYZ5TVSUoXud8pkuK1RpXlpjTUREq7Ra+e0sl6f+sO1XV8i3jY/IC2SZi4gVrNrh6fEBumgjAfvxklxFTtmE/fgZAiukMzd8jFxnNc4rpDDks0tgtJjgsUkS3u9gdJtDt7viGmPMhrl6L3WACV68hfpDE7jCBHySI73Vw143YLRdP2i18r3N8Q6rDO/SvE+ZkFKiO7oHwU//esNHJ//ltdPIFGTVPvaBPsnUAAAAASUVORK5CYII=",
+          }, {
+            name: "评论数",
+            icon: "image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAMCAYAAACURRhjAAAAAXNSR0IArs4c6QAAAOZJREFUWIXt2E8KQVEUx/HfO+ry3pNSkvQmsgIDWcAbm1mBVRgo2Yc9GJgpC7AJBiRJify95R0DVzKQEVe98xneuvWtM7jd4zAzw9DTAfR8hOthAfAV4oucBBJ+ESoIoUr15zEzc3RcYj/ugs8ri4Xx5aTySNc6IK9wH8hu1ATrre2uWHNUFpmwB7pM+jKMP8B6g8ukD9Kzoe0WYejZEBSd1rY7hBGd1iDbEeIVkZuz3SAMcnOgZLlhu0MYyXIDpIIQ5OVtt8Qe+QFUEN7fEK/SAn+6Ib7Kr7YBmJ/641BWJz/0ZnVyA9k6T5AACVG2AAAAAElFTkSuQmCC",
+          }, {
+            name: "获赞数",
+            icon: "image://data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAMCAYAAACURRhjAAAAAXNSR0IArs4c6QAAAOZJREFUWIXt2DFqAkEUxvH/vAyxM5GVEE8RuxRrbWVpE7xCIJBLSBrvYJErWKQUIqQSbyHBRdYgKEz2pVixS1LpbPF+1TAMw4PH8DHPqapy8PYReF8EllnBd4E5oQuB20RI7zzde3/cd6qqn+uC0eueVa5/XGFOpXnleB7UuGkIAjAc76wZEa1y5WW8A0Ams8DXNnJFhnwLk1lApvMQuxZzMJ0HJNtYeldFtinKDDHVIUndelIVSV2QXur/P2nOopd6pNP2NK/tlcTWShydti8z5LF/CWr/kFgcytNDrVzb6CSO30YnPwsOT7hZkdP+AAAAAElFTkSuQmCC",
+          }],
+          top: 20,
+          left: "center",
+          itemWidth: 50,
+          itemHeight: 6,
+        },
+        grid: {
+          top: 80,
+          left: 70,
+          right: 50,
+          borderColor: "#D8D8D8",
+        },
+        xAxis: {
+          type: "category",  // time 类型需要 data 使用时间戳
+          data: [
+            "2019-03-01", "2019-03-02", "2019-03-03", "2019-03-04", "2019-03-05", "2019-03-06", "2019-03-07", "2019-03-08", "2019-03-09", "2019-03-10",
+            "2019-03-11", "2019-03-12", "2019-03-13", "2019-03-14", "2019-03-15", "2019-03-16", "2019-03-17", "2019-03-18", "2019-03-19", "2019-03-20",
+            "2019-03-21", "2019-03-22", "2019-03-23", "2019-03-24", "2019-03-25", "2019-03-26", "2019-03-27", "2019-03-28", "2019-03-29", "2019-03-30", "2019-03-31"
+          ],
+          axisLine: {
+            onZero: false,
+            lineStyle: {
+              color: "#D8D8D8",
+              width: 2,
+            }
+          },
+          axisTick: {
+            show: false,
+          },
+          axisLabel: {
+            color: "#878787",
+            fontSize: 14,
+            margin: 10,
+            interval: 1,
+            formatter: function(v, i) {
+              var date = new Date(v);
+              return date.format("m.d");
+            }
+          }
+        },
+        yAxis: [{
+          min: function(value) {
+            return -Math.max(parseInt(value.max / 20), 1);
+          },
+          splitNumber: 5,
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            lineStyle: {
+              color: "#D8D8D8",
+              width: 2,
+            }
+          },
+          axisLabel: {
+            color: "#878787",
+            fontSize: 14,
+            margin: 10,
+            showMinLabel: false,
+            showMaxLabel: false,
+          },
+          splitLine: {
+            lineStyle: {
+              color: "#F7F7F7",
+              width: 2,
+            }
+          }
+        }],
+        series: [{
+          name: '获赞数',
+          type: 'bar',
+          data: data4,
+          barWidth: 20,
+          stack: "总量",
+          itemStyle: {
+            color: "#6384F5",
+          }
+        }, {
+          name: '评论数',
+          type: 'bar',
+          data: data3,
+          barWidth: 20,
+          stack: "总量",
+          itemStyle: {
+            color: "#F0B652",
+          }
+        }, {
+          name: '分享数',
+          type: 'bar',
+          data: data2,
+          barWidth: 20,
+          stack: "总量",
+          itemStyle: {
+            barBorderRadius: [10, 10, 0, 0],
+            color: "#F6747E",
+          },
+        }],
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "none",
+          },
+          backgroundColor: "#FFF",
+          formatter: '{b}<br/><div style="width: 10px; height: 10px; border-radius: 5px; display: inline-block; background: #F6747E;"></div> {a2}: {c2}' 
+            + '<br/><div style="width: 10px; height: 10px; border-radius: 5px; display: inline-block; background: #F0B652;"></div> {a1}: {c1}' 
+            + '<br/><div style="width: 10px; height: 10px; border-radius: 5px; display: inline-block; background: #6384F5;"></div> {a0}: {c0}',
+          textStyle: {
+            color: "#000",
+          },
+          extraCssText: "box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)",
+          position(point, params, dom, rect, size) {
+            return {left: point[0] - 60, top: "10%"};
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="referrer" content="no-referrer" />
+    <title>轮播效果</title>
+    <style>
+      * {padding: 0; margin: 0; box-sizing: border-box;}
+      .banner {overflow: hidden; width: 100%; height: 300px;}
+      .img-box {position: relative; height: 100%;}
+      .img-box > img {position: absolute; top: 0; width: 100%; height: 100%;}
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <div class="img-box">
+        <img src="http://img2.imgtn.bdimg.com/it/u=234634259,4236876085&fm=26&gp=0.jpg">
+        <img src="http://www.pptbz.com/pptpic/UploadFiles_6909/201203/2012031220134655.jpg">
+        <img src="https://img4.duitang.com/uploads/item/201210/06/20121006120433_CZXuC.jpeg">
+        <img src="http://img2.imgtn.bdimg.com/it/u=234634259,4236876085&fm=26&gp=0.jpg">
+        <img src="http://www.pptbz.com/pptpic/UploadFiles_6909/201203/2012031220134655.jpg">
+      </div>
+    </div>
+    <script>
+      +function() {
+        var imgBox = document.querySelector(".img-box");
+        var startX = 0;
+        var endX = 0;
+        var hadMove = false;
+        // var width = imgBox.offsetWidth;
+        var w = window.innerWidth * 0.1
+        var width = 8 * w;
+        var height = 4.5 * w;
+        var index = 0;
+        var imageOffset = 0;  // 当前图片的偏移量
+        var imageSize = document.querySelectorAll(".img-box > img").length - 2;
+        document.querySelector(".banner").style.height = height + "px";
+        document.querySelectorAll(".img-box > img").forEach(function(node, index) {
+          node.style.width = width + "px";
+          node.style.left = w + (index - 1) * (width + w / 2) + "px";
+        })
+
+        function toIndex(tIndex) {
+          if(tIndex === -1) {
+            index = imageSize - 1;
+          } else if(tIndex == imageSize) {
+            index = 0;
+          } else {
+            index = tIndex;
+          }
+          imageOffset = -index * (width + w / 2);
+          imgBox.style.webkitTransform = "translate3d(" + (imageOffset) +"px, 0, 0)";
+          console.log(`tIndex: ${tIndex}, index: ${index}, imageOffset: ${imageOffset}`);
+        }
+
+        imgBox.addEventListener("touchstart", function(e) {
+          var touched = e.targetTouches[0];
+          startX = touched.pageX;
+        }, false);
+        imgBox.addEventListener("touchend", function(e) {
+          endX = hadMove ? endX : startX;
+          var offset = Math.abs(endX - startX);
+          console.log(`Offset: ${offset}, Width: ${width}`);
+          if(offset < 0.3 * width) {
+            toIndex(index);
+          } else if(startX < endX) {
+            toIndex(index - 1);
+          } else {
+            toIndex(index + 1);
+          }
+        }, false);
+        imgBox.addEventListener("touchmove", function(e) {
+          var touched = e.targetTouches[0];
+          hadMove = true;
+          endX = touched.pageX;
+          imgBox.style.webkitTransform = "translate3d(" + (imageOffset + endX - startX) +"px, 0, 0)";
+        }, false);
+      }();
+    </script>
+  </body>
+</html>

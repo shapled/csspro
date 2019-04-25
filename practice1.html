@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>布局练习</title>
+    <style>
+      *, *::before, *::after {
+        padding: 0;
+        margin: 0;
+        border: 0;
+        box-sizing: border-box;
+      }
+
+      #container > * {margin-top: 1rem; }
+      .info {border: 2px solid green; position: relative;}
+      .info > .left-top {position: absolute; left: 0; top: 0; background: green; color: white;}
+      .info > .right-bottom {position: absolute; right: 0; bottom: 0; background: green; color: white;}
+      .info > *:not(span):not(div):nth-of-type(1)::before {content: ""; display: block; height: 0; margin-top: 1.6rem;}
+      .info > *:not(span):not(div):nth-last-of-type(1)::after {content: ""; display: block; height: 0; margin-bottom: 1.6rem;}
+      .info > p {padding: 0 0.6rem;}
+      .info > ul {padding: 0 0.6rem 0 1.6rem;}
+      #container {padding: 0 0.6rem; margin-bottom: 150px;}
+
+      .set-width {width: 600px; margin: 1rem auto;}
+      .set-max-width {max-width: 600px; margin: 1rem auto;}
+      .regular-left {position: absolute; width: 200px;}
+      .regular-right {margin-left: 200px;}
+      .footer {position: fixed; bottom: 0;}
+
+      .flex-box {display: flex;}
+      .flex-left {width: 200px; flex-shrink: 0;}
+      .flex-right {flex-grow: 1;}
+
+      @media screen and (min-width: 600px) {
+        .percent {overflow: hidden;}
+        .percent-left {width: 25%; float: left;}
+        .percent-right {margin-left: 25%;}
+      }
+
+      @media screen and (max-width: 599px) {
+        li {display: inline;}
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>页面宽度练习</h1>
+      <div class="info nowidth">
+        <span class="left-top">&lt;div class=&quot;nowidth&quot;&gt;</span>
+        <p>这里是一个没有设置width的盒子，它会尽可能的占用画面整个宽度，如果你屏幕比较宽，如果这句话也足够长，你从左到右阅读这段文字会感觉非常累，同时也降低了整个页面的审美。所以，我们需要设置内容的宽度。</p>
+        <p>注意到这个盒子左上角和右下角有两个标签，这两个标签的实现方式用到了position的一个特性，如果父容器的position是非static属性（这里设置的是relative属性，你可以查看css文件中的relative类选择器代码），子容器的position是absolute，则子容器的位置是相对于父容器的，参照css文件中的up和down选择器代码，当然，这种特性一般用来做页面的布局，请参照本文中“常规布局”中的例子。</p>
+        <span class="right-bottom">&lt;/div&gt;</span>
+      </div>
+      <div class="info set-width">
+        <span class="left-top">&lt;div class=&quot;set-width&quot;&gt;</span>
+        <p>这里是一个设置了width的框，我把width设置为600像素，不管你的屏幕有多宽，它都会自动换行，同时设置了margin为auto，这会让这段文字居中，这样屏幕的美观性看上去好了很多，唯一的问题是，如果你的屏幕小余600像素，例如手机屏幕，就会出现一个滚动条，其实也不是很完美。你可以查看css文件中set-width类选择器定义。</p>
+        <span class="right-bottom">&lt;/div&gt;</span>
+      </div>
+      <div class="info set-max-width">
+        <span class="left-top">&lt;div class=&quot;set-max-width&quot;&gt;</span>
+        <p>这里是一个设置了max-width的框，我把max-width设置为600像素，不管你的屏幕有多宽，它都会自动换行，同时设置了margin为auto，这会让这段文字居中，这样屏幕的美观性看上去好了很多，和上一段文字的区别是，如果你的屏幕小余600像素，字段文字会重新排列，完美的解决了上面的问题，但这并没完，假如你同时设置了padding和border-width属性，你会发现这些文字会突破你设置的600像素宽度。</p>
+        <span class="right-bottom">&lt;/div&gt;</span>
+      </div>
+      <h1>常规布局练习</h1>
+      <div class="info regular">
+        <div class="regular-left">
+          <div class="info">
+            <span class="left-top">&lt;nav&gt;</span>
+            <ul>
+              <li><a href="#">page1</a></li>
+              <li><a href="#">page2</a></li>
+              <li><a href="#">page3</a></li>
+            </ul>
+            <span class="right-bottom">&lt;/nav&gt;</span>
+          </div>
+        </div>
+        <div class="regular-right">
+          <div class="info">
+            <span class="left-top">&lt;section&gt;</span>
+            <p>这里是一个典型的布局,左边是页面的导航，右边是页面的主体，你可以把它想象成一个博客页面，右边是一篇篇的文章</p>
+            <span class="right-bottom">&lt;/section&gt;</span>
+          </div>
+          <div class="info">
+            <span class="left-top">&lt;section&gt;</span>
+            <p>这个布局是通过position属性来实现的，nav是导航部分，我们设置了nav对于外层container的相对位置为left:0px；width:200px;对于右边section部分，只需要将左外边距设置为200像素即可：margin-left:200px。值得注意的是，外部container并不需要设置高度，它的高度是随着section的高度的变化而变化的。</p>
+            <span class="right-bottom">&lt;/section&gt;</span>
+          </div>
+        </div>
+      </div>
+      <h1>百分比宽度和media queries练习</h1>
+      <div class="info percent">
+        <div class="percent-left">
+          <div class="info">
+            <span class="left-top">&lt;nav class=&quot;nav1&quot;&gt;</span>
+            <ul>
+              <li><a href="#">page1</a></li>
+              <li><a href="#">page2</a></li>
+              <li><a href="#">page3</a></li>
+            </ul>
+            <span class="right-bottom">&lt;/nav&gt;</span>
+          </div>
+        </div>
+        <div class="percent-right">
+          <div class="info">
+            <span class="left-top">&lt;section class=&quot;sec2&quot;&gt;</span>
+            <p>这一个布局，是使用宽度百分比和media queries制作，其中nav占宽度的25%，为了使nav和section定边对齐，需要设置nav的float:left属性。如果要在nav右边设置section，则要把section设置左外边距为25%的宽度margin-left:25%。</p>
+            <span class="right-bottom">&lt;/section&gt;</span>
+          </div>
+          <div class="info">
+            <span class="left-top">&lt;section class=&quot;sec2&quot;&gt;</span>
+            <p>media queries是一种响应式布局，即可以适应大部分浏览器窗口的变化，这里设置了min-width=600px，和max-width=599px两种属性，当窗口超过600像素时，布局是左右结构，而当窗口像素小余600时，布局变成了上下结构，上面是导航栏，导航按照行进行排列，你可以缩小窗口看看效果</p>
+            <span class="right-bottom">&lt;/section&gt;</span>
+          </div>
+        </div>
+      </div>
+      <h1>更简单的flexbox练习</h1>
+      <div class="info flex-box">
+        <div class="info flex-left">
+          <ul>
+            <li><a href="#">page1</a></li>
+            <li><a href="#">page2</a></li>
+            <li><a href="#">page3</a></li>
+          </ul>
+        </div>
+        <div class="flex-right">
+          <div class="info">
+            <p>flexbox是更简单的布局模型</p>
+          </div>
+          <div class="info">
+            <p>使用flexbox，你只需要设置列信息，例如导航条的宽度，及section的属性是可伸缩的，可以将多个section放入同一个div中实现该方案</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="info">
+        <span class="left-top">&lt;footer&gt;</span>
+        <p>我是页脚，我设置了position:fixed属性，它会使某个元素固定在当前窗口的某个部分，即便你滚动页面，也不会改变它的位置，为了不遮挡页面底部，我设置了body的margin-bottom为150像素</p>
+        <span class="right-bottom">&lt;/footer&gt;</span>
+      </div>
+    </div>
+</html>
